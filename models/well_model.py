@@ -20,7 +20,7 @@ class WellCoordinate:
     well_name: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'WellCoordinate':
+    def from_dict(cls, data: Dict[str, Any]):
         try:
             return cls(
                 inline=int(data.get('Inline', 0)),

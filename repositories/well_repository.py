@@ -1,8 +1,3 @@
-"""
-Repository Layer - Data Access Layer
-Handles all CRUD operations with the data source (CSV in this case)
-Similar to TypeORM repositories in NestJS
-"""
 import csv
 import os
 from typing import List, Optional, Dict, Any
