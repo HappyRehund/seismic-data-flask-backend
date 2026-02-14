@@ -14,18 +14,6 @@ def create_well_routes() -> Blueprint:
     def get_wells_summary():
         return controller.get_wells_summary()
 
-    @well_routes.route('/wells/search/inline', methods=['GET'])
-    def search_wells_by_inline():
-        return controller.search_wells_by_inline()
-
-    @well_routes.route('/wells/search/crossline', methods=['GET'])
-    def search_wells_by_crossline():
-        return controller.search_wells_by_crossline()
-
-    @well_routes.route('/wells/search/area', methods=['GET'])
-    def search_wells_by_area():
-        return controller.search_wells_by_area()
-
     @well_routes.route('/wells/<string:well_name>', methods=['GET'])
     def get_well_by_name(well_name: str):
         return controller.get_well_by_name(well_name)

@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any
 from dataclasses import dataclass, asdict
-
+from dto.well_response import WellData
 
 @dataclass
 class WellCoordinate:
@@ -48,8 +48,23 @@ class WellCoordinate:
             value = value.replace('.', '', value.count('.') - 1) if value.count('.') > 1 else value
         return float(value)
 
-    def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+    def to_dict(self) -> WellData:
+        return {
+          "inline": self.inline,
+          "crossline": self.crossline,
+          "inline_n": self.inline_n,
+          "crossline_n": self.crossline_n,
+          "x": self.x,
+          "y": self.y,
+          "trace_number": self.trace_number,
+          "basement": self.basement,
+          "basement_reff": self.basement_reff,
+          "surface": self.surface_reff,
+          "surface_reff": self.surface_reff,
+          "well_x": self.well_x,
+          "well_y": self.well_y,
+          "well_name": self.well_name
+        }
 
     def validate(self) -> bool:
         if not self.well_name:

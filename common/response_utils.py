@@ -7,7 +7,7 @@ def success_response(data: DtoResponse, status_code: int = 200) -> Tuple[Respons
     """Build a standardized success JSON response"""
     return jsonify({
         "success": True,
-        "data": data.to_dict()
+        "data": dict(data.to_dict())
     }), status_code
 
 
