@@ -37,9 +37,6 @@ class WellRepository:
                 return well
         return None
 
-    def find_by_id(self, well_name: str) -> Optional[WellCoordinate]:
-        return self.find_by_name(well_name)
-
     def count(self) -> int:
         return len(self.find_all())
 
