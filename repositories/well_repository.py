@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from models.well_model import WellCoordinate
 
 class WellRepository:
@@ -13,7 +13,7 @@ class WellRepository:
             raise FileNotFoundError(f"CSV file not found: {self.csv_path}")
 
     def find_all(self) -> List[WellCoordinate]:
-        wells = []
+        wells: List[WellCoordinate] = []
         try:
             with open(self.csv_path, 'r') as file:
                 reader = csv.DictReader(file, delimiter=';')

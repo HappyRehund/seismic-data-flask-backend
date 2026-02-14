@@ -1,11 +1,9 @@
 from typing import List, Optional
-from models.well_model import WellCoordinate
 from repositories.well_repository import WellRepository
 from dto.well_response import WellData, WellsSummaryData
 
 class WellService:
     def __init__(self):
-        """Initialize service with repository dependency"""
         self.repository = WellRepository()
 
     def get_all_wells(self) -> List[WellData]:

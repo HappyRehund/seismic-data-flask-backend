@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Any
-from dataclasses import dataclass, asdict
+from typing import Dict, Any
+from dataclasses import dataclass
 from dto.well_response import WellData
 
 @dataclass
@@ -50,20 +50,20 @@ class WellCoordinate:
 
     def to_dict(self) -> WellData:
         return {
-          "inline": self.inline,
-          "crossline": self.crossline,
-          "inline_n": self.inline_n,
-          "crossline_n": self.crossline_n,
-          "x": self.x,
-          "y": self.y,
-          "trace_number": self.trace_number,
-          "basement": self.basement,
-          "basement_reff": self.basement_reff,
-          "surface": self.surface_reff,
-          "surface_reff": self.surface_reff,
-          "well_x": self.well_x,
-          "well_y": self.well_y,
-          "well_name": self.well_name
+            "inline": self.inline,
+            "crossline": self.crossline,
+            "inline_n": self.inline_n,
+            "crossline_n": self.crossline_n,
+            "x": self.x,
+            "y": self.y,
+            "trace_number": self.trace_number,
+            "basement": self.basement,
+            "basement_reff": self.basement_reff,
+            "surface": self.surface_reff,
+            "surface_reff": self.surface_reff,
+            "well_x": self.well_x,
+            "well_y": self.well_y,
+            "well_name": self.well_name
         }
 
     def validate(self) -> bool:
