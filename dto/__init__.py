@@ -1,4 +1,5 @@
-from .response import (
+from .base import DtoResponse
+from .well_response import (
     WellResponse,
     WellsListResponse,
     WellsSummaryResponse,
@@ -8,6 +9,7 @@ from .response import (
 )
 
 __all__ = [
+    'DtoResponse',
     'WellResponse',
     'WellsListResponse',
     'WellsSummaryResponse',
