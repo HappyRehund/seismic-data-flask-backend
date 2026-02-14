@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+/csv_data/fault/*
+/csv_data/horizon/*
+/csv_data/inline_crossline/*
+/csv_data/well/*
+/csv_data/well_log/*
