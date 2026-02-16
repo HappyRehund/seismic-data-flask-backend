@@ -1,6 +1,6 @@
 from typing import List, Optional
 from repositories.well_repository import WellRepository
-from dto.well_response import WellData, WellsSummaryData
+from dto.response.well_response import WellData, WellsSummaryData
 
 class WellService:
     def __init__(self):

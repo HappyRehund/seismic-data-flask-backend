@@ -1,5 +1,5 @@
 from .base import DtoResponse
-from .well_response import (
+from .response.well_response import (
     WellData,
     RangeStatisticsData,
     StatisticsData,

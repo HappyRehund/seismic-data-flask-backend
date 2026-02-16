@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, Any
+from dto.response.well_log_response import WellLogData
 
 @dataclass
 class WellLog:
@@ -66,7 +67,7 @@ class WellLog:
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid well log data: {str(e)}")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> WellLogData:
         return {
             "id": self.id,
             "well": self.well,

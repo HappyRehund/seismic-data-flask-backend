@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from dataclasses import dataclass
-from dto.well_response import WellData
+from dto.response.well_response import WellData
 
 @dataclass
 class WellCoordinate:
