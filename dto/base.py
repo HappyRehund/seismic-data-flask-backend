@@ -4,7 +4,6 @@ from typing import Any, Protocol, Mapping, List
 class DtoResponse(Protocol):
     def to_dict(self) -> Mapping[str, Any]: ...
 
-
 class ListResponse:
     """Generic wrapper for list responses that implements DtoResponse protocol"""
     def __init__(self, key: str, items: List[Any]):

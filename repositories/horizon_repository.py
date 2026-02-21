@@ -13,22 +13,23 @@ class HorizonRepository:
     if not os.path.exists(self.csv_path):
       raise FileNotFoundError(f"CSV file not found: {self.csv_path}")
 
-  def find_all(self) -> List[Horizon]:
+  def find_all(self, page: int = 1, page_size: int = 500) -> List[Horizon]:
     horizons: List[Horizon] = []
+    start = (page - 1) * page_size
+    end = start + page_size
     try:
-      with open(self.csv_path, 'r') as file:
-        reader = csv.DictReader(file, delimiter=';')
-
-        for row in reader:
-          try:
-            horizon = Horizon.from_dict(row)
-            horizons.append(horizon)
-
-          except Exception as e:
-            print(f"Error passing row: {e}")
+      with open(self.csv_path, 'r', newline='') as file:
+        reader = csv.DictReader(file)  # comma-delimited (default)
+        for i, row in enumerate(reader):
+          if i < start:
             continue
-
+          if i >= end:
+            break
+          try:
+            horizons.append(Horizon.from_dict(row))
+          except Exception as e:
+            print(f"Error parsing row {i}: {e}")
+            continue
     except Exception as e:
       raise Exception(f"Error reading csv file: {str(e)}")
-
     return horizons

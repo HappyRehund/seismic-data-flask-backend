@@ -6,10 +6,10 @@ class HorizonPointData(TypedDict):
   Inline: int
   Crossline: int
   TraceNumber: int
-  bottom: int
-  bottom_reff: int
-  top: int
-  top_reff: int
+  bottom: float
+  bottom_reff: float
+  top: float
+  top_reff: float
 
 class HorizonData(TypedDict):
   horizon: List[HorizonPointData]
