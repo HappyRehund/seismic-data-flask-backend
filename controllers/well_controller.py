@@ -10,10 +10,6 @@ class WellController:
         self.service = WellService()
 
     def get_all_wells(self) -> Tuple[Response, int]:
-        """
-        GET /wells
-        Returns a list of all wells with count
-        """
         try:
             wells = self.service.get_all_wells()
             return success_response(ListResponse("wells", wells))
@@ -21,10 +17,6 @@ class WellController:
             return error_response(str(e), 500)
 
     def get_well_by_name(self, well_name: str) -> Tuple[Response, int]:
-        """
-        GET /wells/:name
-        Returns detailed information about a specific well
-        """
         try:
             well = self.service.get_well_by_name(well_name)
             if well is None:
@@ -36,11 +28,6 @@ class WellController:
             return error_response(str(e), 500)
 
     def get_wells_summary(self) -> Tuple[Response, int]:
-        """
-        GET /wells/summary
-        Returns summary statistics for all wells including total count,
-        inline/crossline ranges, and list of well names
-        """
         try:
             summary_data = self.service.get_wells_summary()
             response = WellsSummaryResponse.from_dict(summary_data)
@@ -49,10 +36,6 @@ class WellController:
             return error_response(str(e), 500)
 
     def check_well_exists(self, well_name: str) -> Tuple[Response, int]:
-        """
-        GET /wells/:name/exists
-        Checks if a well with the given name exists
-        """
         try:
             exists = self.service.check_well_exists(well_name)
             response = WellExistsResponse(exists=exists)
