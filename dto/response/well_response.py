@@ -1,44 +1,6 @@
-from dataclasses import dataclass, asdict
-from typing import List, cast
-from dto.data.well_data import RangeStatisticsData,StatisticsData, WellExistsData,WellsListData,WellData, WellsSummaryData
-
-@dataclass
-class WellResponse:
-    """Response DTO for a single well coordinate"""
-    inline: int
-    crossline: int
-    inline_n: int
-    crossline_n: int
-    x: float
-    y: float
-    trace_number: int
-    basement: float
-    basement_reff: float
-    surface: float
-    surface_reff: float
-    well_x: float
-    well_y: float
-    well_name: str
-
-    def to_dict(self) -> WellData:
-        return cast(WellData, asdict(self))
-
-@dataclass
-class WellsListResponse:
-    """Response DTO for a list of wells"""
-    wells: List[WellResponse]
-    count: int
-
-    @classmethod
-    def from_well_dicts(cls, wells_data: List[WellData]):
-        wells = [WellResponse(**data) for data in wells_data]
-        return cls(wells=wells, count=len(wells))
-
-    def to_dict(self) -> WellsListData:
-        return {
-            "wells": [well.to_dict() for well in self.wells],
-            "count": self.count
-        }
+from dataclasses import dataclass
+from typing import List
+from dto.data.well_data import RangeStatisticsData, StatisticsData, WellExistsData, WellsSummaryData
 
 @dataclass
 class RangeStatistics:

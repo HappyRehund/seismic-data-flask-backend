@@ -1,13 +1,5 @@
-from .base import DtoResponse
+from .base import DtoResponse, ListResponse
 from .response.well_response import (
-    WellData,
-    RangeStatisticsData,
-    StatisticsData,
-    WellsSummaryData,
-    WellsListData,
-    WellExistsData,
-    WellResponse,
-    WellsListResponse,
     WellsSummaryResponse,
     WellExistsResponse,
     StatisticsResponse,
@@ -16,14 +8,7 @@ from .response.well_response import (
 
 __all__ = [
     'DtoResponse',
-    'WellData',
-    'RangeStatisticsData',
-    'StatisticsData',
-    'WellsSummaryData',
-    'WellsListData',
-    'WellExistsData',
-    'WellResponse',
-    'WellsListResponse',
+    'ListResponse',
     'WellsSummaryResponse',
     'WellExistsResponse',
     'StatisticsResponse',

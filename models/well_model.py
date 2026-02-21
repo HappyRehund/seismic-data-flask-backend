@@ -1,6 +1,6 @@
-from typing import Dict, Any
-from dataclasses import dataclass
-from dto.response.well_response import WellData
+from typing import Dict, Any, cast
+from dataclasses import dataclass, asdict
+from dto.data.well_data import WellData
 
 @dataclass
 class WellCoordinate:
@@ -49,22 +49,7 @@ class WellCoordinate:
         return float(value)
 
     def to_dict(self) -> WellData:
-        return {
-            "inline": self.inline,
-            "crossline": self.crossline,
-            "inline_n": self.inline_n,
-            "crossline_n": self.crossline_n,
-            "x": self.x,
-            "y": self.y,
-            "trace_number": self.trace_number,
-            "basement": self.basement,
-            "basement_reff": self.basement_reff,
-            "surface": self.surface_reff,
-            "surface_reff": self.surface_reff,
-            "well_x": self.well_x,
-            "well_y": self.well_y,
-            "well_name": self.well_name
-        }
+        return cast(WellData, asdict(self))
 
     def validate(self) -> bool:
         if not self.well_name:

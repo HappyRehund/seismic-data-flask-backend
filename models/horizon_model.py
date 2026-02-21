@@ -1,6 +1,6 @@
-from dataclasses import dataclass
-from typing import List, Dict, Any
-from dto.response.horizon_response import HorizonPointData
+from dataclasses import dataclass, asdict
+from typing import Dict, Any, cast
+from dto.data.horizon_data import HorizonPointData
 
 @dataclass
 class Horizon:
@@ -32,14 +32,4 @@ class Horizon:
       raise ValueError(f"Invalid: {str(e)}")
 
   def to_dict(self) -> HorizonPointData:
-    return {
-      "X": self.X,
-      "Y": self.Y,
-      "Inline": self.Inline,
-      "Crossline": self.Crossline,
-      "TraceNumber": self.TraceNumber,
-      "bottom": self.bottom,
-      "bottom_reff": self.bottom_reff,
-      "top": self.top,
-      "top_reff": self.top_reff
-    }
+    return cast(HorizonPointData, asdict(self))

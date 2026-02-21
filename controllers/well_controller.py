@@ -2,12 +2,8 @@ from flask import Response
 from typing import Tuple
 from services.well_service import WellService
 from common.response_utils import success_response, error_response
-from dto.response.well_response import (
-    WellResponse,
-    WellsListResponse,
-    WellsSummaryResponse,
-    WellExistsResponse
-)
+from dto.base import ListResponse
+from dto.response.well_response import WellsSummaryResponse, WellExistsResponse
 
 class WellController:
     def __init__(self):
@@ -19,9 +15,8 @@ class WellController:
         Returns a list of all wells with count
         """
         try:
-            wells_data = self.service.get_all_wells()
-            response = WellsListResponse.from_well_dicts(wells_data)
-            return success_response(response)
+            wells = self.service.get_all_wells()
+            return success_response(ListResponse("wells", wells))
         except Exception as e:
             return error_response(str(e), 500)
 
@@ -31,11 +26,10 @@ class WellController:
         Returns detailed information about a specific well
         """
         try:
-            well_data = self.service.get_well_by_name(well_name)
-            if well_data is None:
+            well = self.service.get_well_by_name(well_name)
+            if well is None:
                 return error_response(f"Well '{well_name}' not found", 404)
-            response = WellResponse(**well_data)
-            return success_response(response)
+            return success_response(well)
         except ValueError as e:
             return error_response(str(e), 400)
         except Exception as e:

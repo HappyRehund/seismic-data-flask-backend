@@ -1,21 +1,20 @@
 from typing import List, Optional
 from repositories.well_repository import WellRepository
-from dto.response.well_response import WellData, WellsSummaryData
+from models.well_model import WellCoordinate
+from dto.data.well_data import WellsSummaryData
 
 class WellService:
     def __init__(self):
         self.repository = WellRepository()
 
-    def get_all_wells(self) -> List[WellData]:
-        wells = self.repository.find_all()
-        return [well.to_dict() for well in wells]
+    def get_all_wells(self) -> List[WellCoordinate]:
+        return self.repository.find_all()
 
-    def get_well_by_name(self, well_name: str) -> Optional[WellData]:
+    def get_well_by_name(self, well_name: str) -> Optional[WellCoordinate]:
         if not well_name:
             raise ValueError("Well name is required")
 
-        well = self.repository.find_by_name(well_name)
-        return well.to_dict() if well else None
+        return self.repository.find_by_name(well_name)
 
     def get_wells_summary(self) -> WellsSummaryData:
         wells = self.repository.find_all()

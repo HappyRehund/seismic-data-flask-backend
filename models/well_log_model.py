@@ -1,6 +1,6 @@
-from dataclasses import dataclass
-from typing import Dict, Any
-from dto.response.well_log_response import WellLogData
+from dataclasses import dataclass, asdict
+from typing import Dict, Any, cast
+from dto.data.well_log_data import WellLogData
 
 @dataclass
 class WellLog:
@@ -68,35 +68,7 @@ class WellLog:
             raise ValueError(f"Invalid well log data: {str(e)}")
 
     def to_dict(self) -> WellLogData:
-        return {
-            "id": self.id,
-            "well": self.well,
-            "depth": self.depth,
-            "tvdss": self.tvdss,
-            "xcoord": self.xcoord,
-            "ycoord": self.ycoord,
-            "gr": self.gr,
-            "rt": self.rt,
-            "rhob": self.rhob,
-            "nphi": self.nphi,
-            "dt": self.dt,
-            "dts": self.dts,
-            "dtst": self.dtst,
-            "sp": self.sp,
-            "phie": self.phie,
-            "phit": self.phit,
-            "vsh": self.vsh,
-            "swe": self.swe,
-            "rwa": self.rwa,
-            "iqual": self.iqual,
-            "litho": self.litho,
-            "fluid": self.fluid,
-            "m": self.m,
-            "n": self.n,
-            "zone": self.zone,
-            "marker": self.marker,
-            "fa_status": self.fa_status
-        }
+        return cast(WellLogData, asdict(self))
 
     def validate(self) -> bool:
         if not self.id or not self.well:
