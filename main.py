@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from routes.well_routes import create_well_routes
 from routes.well_log_routes import create_well_log_routes
-
+from routes.horizon_routes import create_horizon_routes
 def create_app() -> Flask:
     app = Flask(__name__)
 
@@ -10,6 +10,7 @@ def create_app() -> Flask:
 
     app.register_blueprint(create_well_routes(), url_prefix='/api')
     app.register_blueprint(create_well_log_routes(), url_prefix='/api')
+    app.register_blueprint(create_horizon_routes(), url_prefix='/api')
 
     @app.route("/health")
     def health_check():
