@@ -1,6 +1,17 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Dict, Any, cast
 from dto.data.well_log_data import WellLogData
+
+
+def _f(value: Any, default: float = 0.0) -> float:
+    """Parse a float, returning default for empty/null/non-numeric values."""
+    if value is None or str(value).strip() == '':
+        return default
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
 
 @dataclass
 class WellLog:
@@ -37,38 +48,38 @@ class WellLog:
         try:
             return cls(
                 id=str(data.get('ID', '')),
-                well=str(data.get('Well', '')),
-                depth=float(data.get('Depth', 0.0)),
-                tvdss=float(data.get('TVDSS', 0.0)),
-                xcoord=float(data.get('Xcoord', 0.0)),
-                ycoord=float(data.get('Ycoord', 0.0)),
-                gr=float(data.get('GR', 0.0)),
-                rt=float(data.get('RT', 0.0)),
-                rhob=float(data.get('RHOB', 0.0)),
-                nphi=float(data.get('NPHI', 0.0)),
-                dt=float(data.get('DT', 0.0)),
-                dts=float(data.get('DTS', 0.0)),
-                dtst=float(data.get('DTST', 0.0)),
-                sp=float(data.get('SP', 0.0)),
-                phie=float(data.get('PHIE', 0.0)),
-                phit=float(data.get('PHIT', 0.0)),
-                vsh=float(data.get('VSH', 0.0)),
-                swe=float(data.get('SWE', 0.0)),
-                rwa=float(data.get('RWA', 0.0)),
-                iqual=float(data.get('IQUAL', 0.0)),
-                litho=float(data.get('LITHO', 0.0)),
-                fluid=float(data.get('FLUID', 0.0)),
-                m=float(data.get('M', 0.0)),
-                n=float(data.get('N', 0.0)),
-                zone=float(data.get('ZONE', 0.0)),
-                marker=float(data.get('MARKER', 0.0)),
-                fa_status=float(data.get('FA_STATUS', 0.0))
+                well=str(data.get('WELL', '')),
+                depth=_f(data.get('DEPTH')),
+                tvdss=_f(data.get('TVDSS')),
+                xcoord=_f(data.get('XCOORD')),
+                ycoord=_f(data.get('YCOORD')),
+                gr=_f(data.get('GR')),
+                rt=_f(data.get('RT')),
+                rhob=_f(data.get('RHOB')),
+                nphi=_f(data.get('NPHI')),
+                dt=_f(data.get('DT')),
+                dts=_f(data.get('DTS')),
+                dtst=_f(data.get('DTST')),
+                sp=_f(data.get('SP')),
+                phie=_f(data.get('PHIE')),
+                phit=_f(data.get('PHIT')),
+                vsh=_f(data.get('VSH')),
+                swe=_f(data.get('SWE')),
+                rwa=_f(data.get('RWA')),
+                iqual=_f(data.get('IQUAL')),
+                litho=_f(data.get('LITHO')),
+                fluid=_f(data.get('FLUID')),
+                m=_f(data.get('M')),
+                n=_f(data.get('N')),
+                zone=_f(data.get('ZONE')),
+                marker=_f(data.get('MARKER')),
+                fa_status=_f(data.get('FA_STATUS'))
             )
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid well log data: {str(e)}")
 
     def to_dict(self) -> WellLogData:
-        return cast(WellLogData, asdict(self))
+        return cast(WellLogData, vars(self).copy())
 
     def validate(self) -> bool:
         if not self.id or not self.well:
