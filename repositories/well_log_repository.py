@@ -14,7 +14,23 @@ class WellLogRepository:
     if not os.path.exists(self.csv_path):
       raise FileNotFoundError(f"CSV file not found: {self.csv_path}")
 
-  def find_all(self, page: int = 1, page_size: int = 500) -> List[WellLog]:
+  def find_all(self) -> List[WellLog]:
+    well_logs: List[WellLog] = []
+
+    try:
+      with open(self.csv_path, 'r', newline='') as file:
+        reader = csv.DictReader(file)  # comma-delimited (default)
+        for i, row in enumerate(reader):
+          try:
+            well_logs.append(WellLog.from_dict(row))
+          except Exception as e:
+            print(f"Error parsing row {i}: {e}")
+            continue
+    except Exception as e:
+      raise Exception(f"Error reading csv file: {str(e)}")
+    return well_logs
+
+  def find_all_page(self, page: int = 1, page_size: int = 500) -> List[WellLog]:
     well_logs: List[WellLog] = []
     start = (page - 1) * page_size
     end = start + page_size

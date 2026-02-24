@@ -5,7 +5,11 @@ def create_horizon_routes() -> Blueprint:
   horizon_routes = Blueprint('horizon', __name__)
   controller = HorizonController()
 
-  @horizon_routes.route('/horizon', methods=['GET'])
+  @horizon_routes.route('/horizon-page', methods=['GET'])
+  def get_all_wells_page():
+    return controller.get_all_horizons_page()
+
+  @horizon_routes.route("/horizon", methods=['GET'])
   def get_all_wells():
     return controller.get_all_horizons()
 

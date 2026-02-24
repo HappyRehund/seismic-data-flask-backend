@@ -10,9 +10,16 @@ class WellLogController:
 
   def get_all_well_logs(self) -> Tuple[Response, int]:
     try:
+      well_logs = self.service.get_all_well_logs()
+      return success_response(ListResponse("well_logs", well_logs))
+    except Exception as e:
+      return error_response(str(e), 500)
+
+  def get_all_well_logs_page(self) -> Tuple[Response, int]:
+    try:
       page = int(request.args.get('page', 1))
       page_size = int(request.args.get('page_size', 500))
-      well_logs = self.service.get_all_well_logs(page=page, page_size=page_size)
+      well_logs = self.service.get_all_well_logs_page(page=page, page_size=page_size)
       return success_response(ListResponse("well_logs", well_logs))
     except Exception as e:
       return error_response(str(e), 500)
