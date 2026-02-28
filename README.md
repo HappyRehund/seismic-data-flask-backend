@@ -52,13 +52,6 @@ backend/
 ├── controllers/                # HTTP request/response handling
 ├── routes/                     # API route definitions
 ├── dto/                        # Data Transfer Objects
-│   ├── base.py                 # DtoResponse protocol, ListResponse
-│   ├── data/                   # Inbound data DTOs
-│   │   ├── horizon_data.py
-│   │   ├── well_data.py
-│   │   └── well_log_data.py
-│   └── response/               # Outbound response DTOs
-│       └── well_response.py
 └── common/                     # Shared cross-cutting utilities
     ├── response_utils.py       # success_response, error_response, file_response
     └── well_name_utils.py      # normalize_well_name helper
