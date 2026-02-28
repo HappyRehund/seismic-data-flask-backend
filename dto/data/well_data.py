@@ -4,18 +4,17 @@ class WellData(TypedDict):
     """Type definition for well coordinate data dictionary"""
     inline: int
     crossline: int
-    inline_n: int
-    crossline_n: int
     x: float
     y: float
     trace_number: int
-    basement: float
-    basement_reff: float
-    surface: float
-    surface_reff: float
+    bottom: float
+    bottom_reff: float
+    top: float
+    top_reff: float
     well_x: float
     well_y: float
     well_name: str
+    distance: float
 
 class RangeStatisticsData(TypedDict):
     """Type definition for range statistics dictionary"""

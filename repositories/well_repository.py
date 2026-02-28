@@ -4,7 +4,7 @@ from typing import List, Optional
 from models.well_model import WellCoordinate
 
 class WellRepository:
-    def __init__(self, csv_path: str = 'csv_data/well/well_coordinates.csv'):
+    def __init__(self, csv_path: str = 'csv_data/well/well_coordinatesmj_B_G.csv'):
         self.csv_path = csv_path
         self._ensure_file_exists()
 
@@ -16,7 +16,7 @@ class WellRepository:
         wells: List[WellCoordinate] = []
         try:
             with open(self.csv_path, 'r') as file:
-                reader = csv.DictReader(file, delimiter=';')
+                reader = csv.DictReader(file, delimiter=',')
                 for row in reader:
                     try:
                         well = WellCoordinate.from_dict(row)
