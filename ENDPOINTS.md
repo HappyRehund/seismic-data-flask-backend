@@ -33,18 +33,17 @@ Returns a list of all wells.
     {
       "inline": 100,
       "crossline": 200,
-      "inline_n": 1,
-      "crossline_n": 1,
       "x": 407890.049,
       "y": 1234567.89,
       "trace_number": 42,
-      "basement": -3200.0,
-      "basement_reff": -3150.0,
-      "surface": 0.0,
-      "surface_reff": 10.0,
+      "bottom": -3200.0,
+      "bottom_reff": -3150.0,
+      "top": -2800.0,
+      "top_reff": -2750.0,
       "well_x": 407890.049,
       "well_y": 1234567.89,
-      "well_name": "WELL-01"
+      "well_name": "WELL-01",
+      "distance": 123.45
     }
   ],
   "count": 1
@@ -90,18 +89,17 @@ Returns the data for a single well by name.
 {
   "inline": 100,
   "crossline": 200,
-  "inline_n": 1,
-  "crossline_n": 1,
   "x": 407890.049,
   "y": 1234567.89,
   "trace_number": 42,
-  "basement": -3200.0,
-  "basement_reff": -3150.0,
-  "surface": 0.0,
-  "surface_reff": 10.0,
+  "bottom": -3200.0,
+  "bottom_reff": -3150.0,
+  "top": -2800.0,
+  "top_reff": -2750.0,
   "well_x": 407890.049,
   "well_y": 1234567.89,
-  "well_name": "WELL-01"
+  "well_name": "WELL-01",
+  "distance": 123.45
 }
 ```
 
@@ -128,75 +126,123 @@ Checks whether a well with the given name exists.
 
 ## Well Logs
 
-### `GET /well-log`
+Well logs are grouped by log type:
+- `phie`
+- `swe`
+- `vsh`
 
-Returns all well log entries.
+For every type, available endpoints are:
+- `GET /well-log/<log_type>`
+- `GET /well-log/<log_type>/wells`
+- `GET /well-log/<log_type>/<well_name>`
+
+Empty values in CSV are returned as `null`.
+
+---
+
+### `GET /well-log/phie`
+
+Returns PHIE logs for all wells.
 
 **Response `data`:**
 ```json
 {
-  "well_logs": [
+  "wells": [
     {
-      "id": "abc123",
-      "well": "WELL-01",
-      "depth": 1000.0,
-      "tvdss": -980.0,
-      "xcoord": 407890.049,
-      "ycoord": 1234567.89,
-      "gr": 75.3,
-      "rt": 12.5,
-      "rhob": 2.45,
-      "nphi": 0.22,
-      "dt": 68.0,
-      "dts": 115.0,
-      "dtst": 0.0,
-      "sp": -40.0,
-      "phie": 0.18,
-      "phit": 0.20,
-      "vsh": 0.30,
-      "swe": 0.55,
-      "rwa": 0.01,
-      "iqual": 1.0,
-      "litho": 2.0,
-      "fluid": 1.0,
-      "m": 2.0,
-      "n": 2.0,
-      "zone": 3.0,
-      "marker": 0.0,
-      "fa_status": 1.0
+      "well_name": "MJ-106",
+      "log_type": "phie",
+      "entries": [
+        { "twt": 0.0, "value": null },
+        { "twt": -2.0, "value": null },
+        { "twt": -128.0, "value": 0.001351232 }
+      ],
+      "count": 2500
     }
   ],
-  "count": 1
+  "count": 26
 }
 ```
 
 ---
 
-### `GET /well-log-page`
+### `GET /well-log/phie/wells`
 
-Returns a paginated list of well log entries.
+Returns list of available well names in PHIE.
 
-**Query parameters:**
-
-| Parameter   | Type | Default | Description          |
-|-------------|------|---------|----------------------|
-| `page`      | int  | `1`     | Page number          |
-| `page_size` | int  | `500`   | Number of items per page |
-
-**Response `data`:** *(same shape as `GET /well-log`)*
+**Response `data`:**
+```json
+{
+  "well_names": ["MJ-106", "MJ-115", "MJ-116"],
+  "count": 26
+}
+```
 
 ---
 
-### `GET /well-log/<well_name>`
+### `GET /well-log/phie/<well_name>`
 
-Returns all well log entries for a specific well.
+Returns PHIE log entries for one well.
 
 **Path parameter:** `well_name` — name of the well (string)
 
-**Response `data`:** *(same shape as `GET /well-log`)*
+**Response `data`:**
+```json
+{
+  "well_name": "MJ-106",
+  "log_type": "phie",
+  "entries": [
+    { "twt": 0.0, "value": null },
+    { "twt": -2.0, "value": null },
+    { "twt": -128.0, "value": 0.001351232 }
+  ],
+  "count": 2500
+}
+```
 
 **Error responses:**
-- `404` — no well logs found for the given well name
+- `404` — well not found in PHIE log
+
+---
+
+### `GET /well-log/swe`
+
+Returns SWE logs for all wells.
+
+---
+
+### `GET /well-log/swe/wells`
+
+Returns list of available well names in SWE.
+
+---
+
+### `GET /well-log/swe/<well_name>`
+
+Returns SWE log entries for one well.
+
+**Error responses:**
+- `404` — well not found in SWE log
+
+---
+
+### `GET /well-log/vsh`
+
+Returns VSH logs for all wells.
+
+---
+
+### `GET /well-log/vsh/wells`
+
+Returns list of available well names in VSH.
+
+---
+
+### `GET /well-log/vsh/<well_name>`
+
+Returns VSH log entries for one well.
+
+**Error responses:**
+- `404` — well not found in VSH log
 
 ---
 
