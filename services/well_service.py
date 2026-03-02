@@ -1,7 +1,6 @@
 from typing import List, Optional
 from repositories.well_repository import WellRepository
 from models.well_model import WellCoordinate
-from dto.data.well_data import WellsSummaryData
 
 class WellService:
     def __init__(self):
@@ -16,7 +15,7 @@ class WellService:
 
         return self.repository.find_by_name(well_name)
 
-    def get_wells_summary(self) -> WellsSummaryData:
+    def get_wells_summary(self) -> dict:
         wells = self.repository.find_all()
 
         if not wells:

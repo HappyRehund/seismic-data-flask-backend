@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, cast
-from dto.data.horizon_data import HorizonPointData
+from typing import Dict, Any
 
 @dataclass
 class Horizon:
@@ -31,5 +30,5 @@ class Horizon:
     except (ValueError, TypeError) as e:
       raise ValueError(f"Invalid: {str(e)}")
 
-  def to_dict(self) -> HorizonPointData:
-    return cast(HorizonPointData, vars(self).copy())
+  def to_dict(self) -> dict:
+    return vars(self).copy()

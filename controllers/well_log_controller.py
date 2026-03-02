@@ -1,8 +1,7 @@
 from services.well_log_service import WellLogService
 from typing import Tuple
 from flask import Response
-from common.response_utils import success_response, error_response
-from dto.base import ListResponse
+from common.response_utils import success_response, error_response, ListResponse
 
 
 class WellLogController:
@@ -32,17 +31,8 @@ class WellLogController:
   def get_well_names(self, log_type: str) -> Tuple[Response, int]:
     try:
       names = self.service.get_well_names(log_type)
-      return success_response(ListResponse("well_names", [_StrWrapper(n) for n in names]))
+      return success_response(ListResponse("well_names", names))
     except ValueError as e:
       return error_response(str(e), 400)
     except Exception as e:
       return error_response(str(e), 500)
-
-
-class _StrWrapper:
-  """Wrapper to make plain strings compatible with ListResponse's to_dict() call."""
-  def __init__(self, value: str):
-    self._value = value
-
-  def to_dict(self) -> str:
-    return self._value

@@ -1,8 +1,7 @@
 from services.horizon_service import HorizonService
 from typing import Tuple
 from flask import Response, request
-from common.response_utils import success_response, error_response
-from dto.base import ListResponse
+from common.response_utils import success_response, error_response, ListResponse
 
 class HorizonController:
   def __init__(self):
@@ -10,7 +9,7 @@ class HorizonController:
 
   def get_all_horizons(self) -> Tuple[Response, int]:
     try:
-      horizons = self.service.get_all_horizons_page()
+      horizons = self.service.get_all_horizons()
       return success_response(ListResponse("horizons", horizons))
 
     except Exception as e:

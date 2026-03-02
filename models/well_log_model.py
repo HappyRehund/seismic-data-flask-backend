@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Optional, List, cast
-from dto.data.well_log_data import WellLogEntryData, WellLogData as WellLogDataDict
+from typing import Dict, Any, Optional, List
 
 
 @dataclass
@@ -18,11 +17,11 @@ class WellLogEntry:
         value = None
     return cls(twt=twt, value=value)
 
-  def to_dict(self) -> WellLogEntryData:
-    return cast(WellLogEntryData, {
+  def to_dict(self) -> dict:
+    return {
       "twt": self.twt,
       "value": self.value
-    })
+    }
 
 
 @dataclass
@@ -31,10 +30,10 @@ class WellLogData:
   log_type: str
   entries: List[WellLogEntry]
 
-  def to_dict(self) -> WellLogDataDict:
-    return cast(WellLogDataDict, {
+  def to_dict(self) -> dict:
+    return {
       "well_name": self.well_name,
       "log_type": self.log_type,
       "entries": [e.to_dict() for e in self.entries],
       "count": len(self.entries)
-    })
+    }

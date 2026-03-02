@@ -1,9 +1,8 @@
 from flask import Response
 from typing import Tuple
 from services.well_service import WellService
-from common.response_utils import success_response, error_response
-from dto.base import ListResponse
-from dto.response.well_response import WellsSummaryResponse, WellExistsResponse
+from common.response_utils import success_response, error_response, ListResponse
+from models.well_model import WellsSummaryResponse, WellExistsResponse
 
 class WellController:
     def __init__(self):

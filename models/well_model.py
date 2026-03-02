@@ -1,6 +1,5 @@
-from typing import Dict, Any, cast
+from typing import Dict, Any, List
 from dataclasses import dataclass, asdict
-from dto.data.well_data import WellData
 
 @dataclass
 class WellCoordinate:
@@ -46,8 +45,8 @@ class WellCoordinate:
             value = value.replace('.', '', value.count('.') - 1) if value.count('.') > 1 else value
         return float(value)
 
-    def to_dict(self) -> WellData:
-        return cast(WellData, asdict(self))
+    def to_dict(self) -> dict:
+        return asdict(self)
 
     def validate(self) -> bool:
         if not self.well_name:
@@ -55,3 +54,70 @@ class WellCoordinate:
         if self.inline <= 0 or self.crossline <= 0:
             raise ValueError("Inline and Crossline must be positive")
         return True
+
+
+@dataclass
+class RangeStatistics:
+    """Statistics for inline or crossline range"""
+    min: int
+    max: int
+    range: int
+
+    def to_dict(self) -> dict:
+        return {
+            "min": self.min,
+            "max": self.max,
+            "range": self.range
+        }
+
+
+@dataclass
+class StatisticsResponse:
+    """Statistics response containing inline and crossline stats"""
+    inline: RangeStatistics
+    crossline: RangeStatistics
+
+    def to_dict(self) -> dict:
+        return {
+            "inline": self.inline.to_dict(),
+            "crossline": self.crossline.to_dict()
+        }
+
+
+@dataclass
+class WellsSummaryResponse:
+    """Response for wells summary"""
+    total_wells: int
+    statistics: StatisticsResponse
+    well_names: List[str]
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'WellsSummaryResponse':
+        stats_data = data.get('statistics', {})
+        inline_stats = RangeStatistics(**stats_data.get('inline', {}))
+        crossline_stats = RangeStatistics(**stats_data.get('crossline', {}))
+        statistics = StatisticsResponse(inline=inline_stats, crossline=crossline_stats)
+
+        return cls(
+            total_wells=data.get('total_wells', 0),
+            statistics=statistics,
+            well_names=data.get('well_names', [])
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            "total_wells": self.total_wells,
+            "statistics": self.statistics.to_dict(),
+            "well_names": self.well_names
+        }
+
+
+@dataclass
+class WellExistsResponse:
+    """Response for well existence check"""
+    exists: bool
+
+    def to_dict(self) -> dict:
+        return {
+            "exists": self.exists
+        }
