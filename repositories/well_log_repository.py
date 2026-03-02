@@ -1,77 +1,117 @@
 import csv
 import os
-from typing import List, Optional
-from models.well_log_model import WellLog
-from common.well_name_utils import normalize_well_name
+from typing import List, Optional, Dict
+from models.well_log_model import WellLogEntry, WellLogData
+
+
+class WellLogType:
+  PHIE = "phie"
+  SWE = "swe"
+  VSH = "vsh"
+
+  VALID_TYPES = [PHIE, SWE, VSH]
+
+  CSV_MAP: Dict[str, str] = {
+    PHIE: "csv_data/well_log/phie/PHIE.csv",
+    SWE: "csv_data/well_log/swe/SWE.csv",
+    VSH: "csv_data/well_log/vsh/VSH.csv",
+  }
+
 
 class WellLogRepository:
 
-  def __init__(self, csv_path: str = 'csv_data/well_log/gnk_well_log.csv'):
-    self.csv_path = csv_path
-    self._ensure_file_exists()
+  def __init__(self):
+    for log_type, path in WellLogType.CSV_MAP.items():
+      if not os.path.exists(path):
+        raise FileNotFoundError(f"CSV file not found for {log_type}: {path}")
 
-  def _ensure_file_exists(self):
-    if not os.path.exists(self.csv_path):
-      raise FileNotFoundError(f"CSV file not found: {self.csv_path}")
+  def _get_csv_path(self, log_type: str) -> str:
+    if log_type not in WellLogType.CSV_MAP:
+      raise ValueError(f"Invalid log type: {log_type}. Valid types: {WellLogType.VALID_TYPES}")
+    return WellLogType.CSV_MAP[log_type]
 
-  def find_all(self) -> List[WellLog]:
-    well_logs: List[WellLog] = []
-
+  def get_well_names(self, log_type: str) -> List[str]:
+    csv_path = self._get_csv_path(log_type)
     try:
-      with open(self.csv_path, 'r', newline='') as file:
-        reader = csv.DictReader(file)  # comma-delimited (default)
-        for i, row in enumerate(reader):
-          try:
-            well_logs.append(WellLog.from_dict(row))
-          except Exception as e:
-            print(f"Error parsing row {i}: {e}")
-            continue
+      with open(csv_path, 'r', newline='') as file:
+        reader = csv.reader(file)
+        headers = next(reader)
+        return [h.strip() for h in headers[1:]]
     except Exception as e:
-      raise Exception(f"Error reading csv file: {str(e)}")
-    return well_logs
+      raise Exception(f"Error reading CSV file: {str(e)}")
 
-  def find_all_page(self, page: int = 1, page_size: int = 500) -> List[WellLog]:
-    well_logs: List[WellLog] = []
-    start = (page - 1) * page_size
-    end = start + page_size
-    try:
-      with open(self.csv_path, 'r', newline='') as file:
-        reader = csv.DictReader(file)  # comma-delimited (default)
-        for i, row in enumerate(reader):
-          if i < start:
-            continue
-          if i >= end:
-            break
-          try:
-            well_logs.append(WellLog.from_dict(row))
-          except Exception as e:
-            print(f"Error parsing row {i}: {e}")
-            continue
-    except Exception as e:
-      raise Exception(f"Error reading csv file: {str(e)}")
-    return well_logs
+  def find_all(self, log_type: str) -> List[WellLogData]:
+    csv_path = self._get_csv_path(log_type)
+    well_names: List[str] = []
+    well_entries: Dict[str, List[WellLogEntry]] = {}
 
-  def find_by_well(self, well_name: str) -> List[WellLog]:
-    """Return all rows for a well, normalizing the name before comparison."""
-    canonical = normalize_well_name(well_name)
-    results: List[WellLog] = []
     try:
-      with open(self.csv_path, 'r', newline='') as file:
-        reader = csv.DictReader(file)
+      with open(csv_path, 'r', newline='') as file:
+        reader = csv.reader(file)
+        headers = next(reader)
+        well_names = [h.strip() for h in headers[1:]]
+
+        for name in well_names:
+          well_entries[name] = []
+
         for row in reader:
-          if normalize_well_name(row.get('WELL', '')) == canonical:
-            try:
-              results.append(WellLog.from_dict(row))
-            except Exception as e:
-              print(f"Error parsing row: {e}")
-    except Exception as e:
-      raise Exception(f"Error reading csv file: {str(e)}")
-    return results
+          try:
+            twt = float(row[0])
+          except (ValueError, IndexError):
+            continue
 
-  def count(self) -> int:
+          for idx, name in enumerate(well_names):
+            col_idx = idx + 1
+            raw_value = row[col_idx] if col_idx < len(row) else ''
+            entry = WellLogEntry.from_dict(twt, raw_value)
+            well_entries[name].append(entry)
+
+    except Exception as e:
+      raise Exception(f"Error reading CSV file: {str(e)}")
+
+    result: List[WellLogData] = []
+    for name in well_names:
+      result.append(WellLogData(
+        well_name=name,
+        log_type=log_type,
+        entries=well_entries[name]
+      ))
+
+    return result
+
+  def find_by_well_name(self, log_type: str, well_name: str) -> Optional[WellLogData]:
+    csv_path = self._get_csv_path(log_type)
+    entries: List[WellLogEntry] = []
+    col_index: Optional[int] = None
+
     try:
-      with open(self.csv_path, 'r', newline='') as file:
-        return sum(1 for _ in file) - 1  # minus header
-    except Exception as e:
-      raise Exception(f"Error reading csv file: {str(e)}")
+      with open(csv_path, 'r', newline='') as file:
+        reader = csv.reader(file)
+        headers = next(reader)
+        header_names = [h.strip() for h in headers]
 
+        for idx, name in enumerate(header_names):
+          if name == well_name:
+            col_index = idx
+            break
+
+        if col_index is None:
+          return None
+
+        for row in reader:
+          try:
+            twt = float(row[0])
+          except (ValueError, IndexError):
+            continue
+
+          raw_value = row[col_index] if col_index < len(row) else ''
+          entries.append(WellLogEntry.from_dict(twt, raw_value))
+
+    except Exception as e:
+      raise Exception(f"Error reading CSV file: {str(e)}")
+
+    return WellLogData(
+      well_name=well_name,
+      log_type=log_type,
+      entries=entries
+    )

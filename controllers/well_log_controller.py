@@ -1,34 +1,48 @@
 from services.well_log_service import WellLogService
 from typing import Tuple
-from flask import Response, request
-from common.response_utils import error_response, success_response
+from flask import Response
+from common.response_utils import success_response, error_response
 from dto.base import ListResponse
+
 
 class WellLogController:
   def __init__(self):
     self.service = WellLogService()
 
-  def get_all_well_logs(self) -> Tuple[Response, int]:
+  def get_all_by_type(self, log_type: str) -> Tuple[Response, int]:
     try:
-      well_logs = self.service.get_all_well_logs()
-      return success_response(ListResponse("well_logs", well_logs))
+      well_logs = self.service.get_all_by_type(log_type)
+      return success_response(ListResponse("wells", well_logs))
+    except ValueError as e:
+      return error_response(str(e), 400)
     except Exception as e:
       return error_response(str(e), 500)
 
-  def get_all_well_logs_page(self) -> Tuple[Response, int]:
+  def get_by_well_name(self, log_type: str, well_name: str) -> Tuple[Response, int]:
     try:
-      page = int(request.args.get('page', 1))
-      page_size = int(request.args.get('page_size', 500))
-      well_logs = self.service.get_all_well_logs_page(page=page, page_size=page_size)
-      return success_response(ListResponse("well_logs", well_logs))
+      well_log = self.service.get_by_well_name(log_type, well_name)
+      if well_log is None:
+        return error_response(f"Well '{well_name}' not found in {log_type.upper()} log", 404)
+      return success_response(well_log)
+    except ValueError as e:
+      return error_response(str(e), 400)
     except Exception as e:
       return error_response(str(e), 500)
 
-  def get_by_well_name(self, well_name: str) -> Tuple[Response, int]:
+  def get_well_names(self, log_type: str) -> Tuple[Response, int]:
     try:
-      well_logs = self.service.get_by_well_name(well_name)
-      if not well_logs:
-        return error_response(f"No well logs found for '{well_name}'", 404)
-      return success_response(ListResponse("well_logs", well_logs))
+      names = self.service.get_well_names(log_type)
+      return success_response(ListResponse("well_names", [_StrWrapper(n) for n in names]))
+    except ValueError as e:
+      return error_response(str(e), 400)
     except Exception as e:
       return error_response(str(e), 500)
+
+
+class _StrWrapper:
+  """Wrapper to make plain strings compatible with ListResponse's to_dict() call."""
+  def __init__(self, value: str):
+    self._value = value
+
+  def to_dict(self) -> str:
+    return self._value
