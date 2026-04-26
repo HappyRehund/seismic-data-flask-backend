@@ -12,3 +12,9 @@ class SeismicSectionService:
 
     def get_crossline_image(self, number: int) -> Optional[SeismicSection]:
         return self.repository.find_by_number(SectionType.CROSSLINE, number)
+
+    def get_inline_mjb_image(self, number: int) -> Optional[SeismicSection]:
+        return self.repository.find_by_number(SectionType.INLINEMJB, number)
+
+    def get_crossline_mjb_image(self, number: int) -> Optional[SeismicSection]:
+        return self.repository.find_by_number(SectionType.CROSSLINEMJB, number)

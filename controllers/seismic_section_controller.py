@@ -37,3 +37,33 @@ class SeismicSectionController:
             )
         except Exception as e:
             return error_response(str(e), 500)
+
+    def get_inline_mjb_image(self, number: int) -> Tuple[Response, int] | Response:
+        """Return a PNG image for the requested inline MJB section number."""
+        try:
+            section = self.service.get_inline_mjb_image(number)
+            if section is None:
+                return error_response(f"Inline MJB section {number} not found", 404)
+
+            return file_response(
+                data=section.image_data,
+                mime_type='image/png',
+                filename=f'inlineMJB_{number}.png',
+            )
+        except Exception as e:
+            return error_response(str(e), 500)
+
+    def get_crossline_mjb_image(self, number: int) -> Tuple[Response, int] | Response:
+        """Return a PNG image for the requested crossline MJB section number."""
+        try:
+            section = self.service.get_crossline_mjb_image(number)
+            if section is None:
+                return error_response(f"Crossline MJB section {number} not found", 404)
+
+            return file_response(
+                data=section.image_data,
+                mime_type='image/png',
+                filename=f'crosslineMJB_{number}.png',
+            )
+        except Exception as e:
+            return error_response(str(e), 500)

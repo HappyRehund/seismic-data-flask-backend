@@ -5,6 +5,8 @@ from enum import Enum
 class SectionType(Enum):
     INLINE = 'inline'
     CROSSLINE = 'crossline'
+    INLINEMJB = 'inlineMJB'
+    CROSSLINEMJB = 'crosslineMJB'
 
 
 @dataclass
