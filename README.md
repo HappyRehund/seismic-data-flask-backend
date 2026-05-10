@@ -251,14 +251,3 @@ class WellRepository:
     def find_all(self):
         return db.session.query(WellCoordinate).all()
 ```
-
-## Benefits of This Architecture
-
-✅ **Separation of Concerns** - Each layer has a single responsibility
-✅ **Testability** - Easy to unit test each layer independently
-✅ **Maintainability** - Changes in one layer don't affect others
-✅ **Scalability** - Easy to add new features/endpoints
-✅ **Database Agnostic** - Easy to swap data sources
-✅ **Familiar** - Similar to NestJS/TypeScript patterns
-✅ **Typed Contracts** - DTOs enforce clear data shapes across layer boundaries
-✅ **DRY Utilities** - Shared `common/` helpers prevent duplicated response logic
