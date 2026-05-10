@@ -11,4 +11,8 @@ def create_image_helper_routes() -> Blueprint:
     def get_image_dimensions(section_type: str, number: int):
         return controller.get_image_dimensions(section_type, number)
 
+    @image_helper_routes.route('/image-helper/datasets', methods=['GET'])
+    def get_datasets():
+        return controller.get_datasets()
+
     return image_helper_routes

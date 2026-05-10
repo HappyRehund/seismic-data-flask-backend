@@ -22,4 +22,8 @@ def create_seismic_section_routes() -> Blueprint:
     def get_crossline_mjb_image(number: int):
         return controller.get_crossline_mjb_image(number)
 
+    @seismic_routes.route('/seismic/datasets', methods=['GET'])
+    def get_datasets():
+        return controller.get_datasets()
+
     return seismic_routes

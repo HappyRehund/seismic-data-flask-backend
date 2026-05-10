@@ -6,17 +6,16 @@ class WellService:
     def __init__(self):
         self.repository = WellRepository()
 
-    def get_all_wells(self) -> List[WellCoordinate]:
-        return self.repository.find_all()
+    def get_all_wells(self, dataset: str = 'well_coordinatesmj_B_G') -> List[WellCoordinate]:
+        return self.repository.find_all(dataset=dataset)
 
-    def get_well_by_name(self, well_name: str) -> Optional[WellCoordinate]:
+    def get_well_by_name(self, well_name: str, dataset: str = 'well_coordinatesmj_B_G') -> Optional[WellCoordinate]:
         if not well_name:
             raise ValueError("Well name is required")
+        return self.repository.find_by_name(well_name, dataset=dataset)
 
-        return self.repository.find_by_name(well_name)
-
-    def get_wells_summary(self) -> dict:
-        wells = self.repository.find_all()
+    def get_wells_summary(self, dataset: str = 'well_coordinatesmj_B_G') -> dict:
+        wells = self.repository.find_all(dataset=dataset)
 
         if not wells:
             return {
@@ -48,5 +47,8 @@ class WellService:
             "well_names": [w.well_name for w in wells]
         }
 
-    def check_well_exists(self, well_name: str) -> bool:
-        return self.repository.exists(well_name)
+    def check_well_exists(self, well_name: str, dataset: str = 'well_coordinatesmj_B_G') -> bool:
+        return self.repository.exists(well_name, dataset=dataset)
+
+    def get_available_datasets(self) -> List[str]:
+        return self.repository.list_datasets()

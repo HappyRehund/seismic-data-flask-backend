@@ -22,4 +22,8 @@ def create_well_routes() -> Blueprint:
     def check_well_exists(well_name: str):
         return controller.check_well_exists(well_name)
 
+    @well_routes.route('/well/datasets', methods=['GET'])
+    def get_datasets():
+        return controller.get_datasets()
+
     return well_routes

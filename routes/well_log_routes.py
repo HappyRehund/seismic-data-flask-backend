@@ -45,4 +45,9 @@ def create_well_log_routes() -> Blueprint:
     def get_vsh_by_well(well_name: str):
         return controller.get_by_well_name('vsh', well_name)
 
+    # --- Dataset discovery ---
+    @well_log_routes.route('/well-log/datasets', methods=['GET'])
+    def get_datasets():
+        return controller.get_datasets()
+
     return well_log_routes
