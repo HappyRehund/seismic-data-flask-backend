@@ -3,8 +3,8 @@ from typing import Dict, Any
 
 @dataclass
 class Horizon:
-  X: int
-  Y: int
+  X: float
+  Y: float
   Inline: int
   Crossline: int
   TraceNumber: int
@@ -17,8 +17,8 @@ class Horizon:
   def from_dict(cls, data: Dict[str, Any]):
     try:
       return cls(
-        X=int(data.get('X', 0)),
-        Y=int(data.get('Y', 0)),
+        X=float(data.get('X', 0)),
+        Y=float(data.get('Y', 0)),
         Inline=int(data.get('Inline', 0)),
         Crossline=int(data.get('Crossline', 0)),
         TraceNumber=int(data.get('TraceNumber', 0)),
