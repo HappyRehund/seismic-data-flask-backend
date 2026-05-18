@@ -1,47 +1,12 @@
 import os
+import re
 from typing import Optional, List, Dict
-from models.seismic_section_model import SeismicSection, SectionType
 
-SEISMIC_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'csv_data', 'inline_crossline')
+from models.seismic_section_model import SeismicSection, SectionType, SectionRange
+from repositories.base_seismic_repository import BaseSeismicRepository
 
 
-class SeismicSectionRepository:
-    def __init__(self):
-        self._datasets: Dict[str, str] = {}
-        self._section_types_cache: Dict[str, List[str]] = {}
-        self._discover_datasets()
-
-    def _discover_datasets(self):
-        if not os.path.isdir(SEISMIC_DATA_DIR):
-            raise FileNotFoundError(f"Seismic data directory not found: {SEISMIC_DATA_DIR}")
-
-        for entry in sorted(os.listdir(SEISMIC_DATA_DIR)):
-            full_path = os.path.join(SEISMIC_DATA_DIR, entry)
-            if os.path.isdir(full_path):
-                self._datasets[entry] = full_path
-                self._section_types_cache[entry] = sorted([
-                    d for d in os.listdir(full_path)
-                    if os.path.isdir(os.path.join(full_path, d))
-                ])
-
-        if not self._datasets:
-            raise FileNotFoundError(f"No dataset directories found in {SEISMIC_DATA_DIR}")
-
-    def list_datasets(self) -> List[str]:
-        return sorted(self._datasets.keys())
-
-    def list_section_types(self, dataset: str) -> List[str]:
-        if dataset not in self._datasets:
-            available = sorted(self._datasets.keys())
-            raise ValueError(f"Unknown dataset '{dataset}'. Available: {available}")
-        return self._section_types_cache[dataset]
-
-    def _get_base_path(self, dataset: str) -> str:
-        if dataset not in self._datasets:
-            available = sorted(self._datasets.keys())
-            raise ValueError(f"Unknown dataset '{dataset}'. Available: {available}")
-        return self._datasets[dataset]
-
+class SeismicSectionRepository(BaseSeismicRepository):
     def _build_candidate_paths(self, section_type: SectionType, dataset: str, number: int) -> list[str]:
         base = self._get_base_path(dataset)
 
@@ -53,19 +18,6 @@ class SeismicSectionRepository:
         if section_type == SectionType.CROSSLINE:
             return [
                 os.path.join(base, 'crossline', f'crossline_{number}.png'),
-            ]
-
-        if section_type == SectionType.INLINEMJB:
-            return [
-                os.path.join(base, 'inlineMJB', f'inline_{number}.png'),
-                os.path.join(base, 'inlineMJB', f'inlineMJB_{number}.png'),
-            ]
-
-        if section_type == SectionType.CROSSLINEMJB:
-            return [
-                os.path.join(base, 'crosslineMJB', 'crosslineMJB', f'crossline_{number}.png'),
-                os.path.join(base, 'crosslineMJB', f'crossline_{number}.png'),
-                os.path.join(base, 'crosslineMJB', f'crosslineMJB_{number}.png'),
             ]
 
         return []
@@ -89,3 +41,30 @@ class SeismicSectionRepository:
             section_number=number,
             image_data=image_data,
         )
+
+    def get_section_ranges(self, dataset: str = 'default') -> Dict[str, Optional[SectionRange]]:
+        """Scan the dataset directories and return min/max/count for each section type."""
+        base = self._get_base_path(dataset)
+        ranges: Dict[str, Optional[SectionRange]] = {}
+
+        for section_type in SectionType:
+            section_dir = os.path.join(base, section_type.value)
+            if not os.path.isdir(section_dir):
+                continue
+
+            numbers: List[int] = []
+            pattern = re.compile(rf"^{section_type.value}_(\d+)\.png$")
+
+            for filename in os.listdir(section_dir):
+                match = pattern.match(filename)
+                if match:
+                    numbers.append(int(match.group(1)))
+
+            if numbers:
+                ranges[section_type.value] = SectionRange(
+                    min=min(numbers),
+                    max=max(numbers),
+                    count=len(numbers),
+                )
+
+        return ranges
