@@ -1,6 +1,6 @@
 from typing import List, Optional
 from repositories.well_log_repository import WellLogRepository, LOG_TYPE_FILES
-from models.well_log_model import WellLogData
+from models.well_log_model import WellLogData, WellLogStats, WellLogWellStats
 
 
 class WellLogService:
@@ -32,3 +32,13 @@ class WellLogService:
 
     def get_log_types(self, dataset: str) -> List[str]:
         return self.repository.list_log_types(dataset)
+
+    def get_stats(self, log_type: str, dataset: str = 'default') -> WellLogStats:
+        log_type = self._validate_log_type(log_type)
+        return self.repository.get_stats(log_type, dataset=dataset)
+
+    def get_well_stats(self, log_type: str, well_name: str, dataset: str = 'default') -> Optional[WellLogWellStats]:
+        log_type = self._validate_log_type(log_type)
+        if not well_name:
+            raise ValueError("Well name is required")
+        return self.repository.get_well_stats(log_type, well_name, dataset=dataset)
