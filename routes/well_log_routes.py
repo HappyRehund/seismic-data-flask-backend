@@ -11,9 +11,17 @@ def create_well_log_routes() -> Blueprint:
     def get_all_phie():
         return controller.get_all_by_type('phie')
 
+    @well_log_routes.route('/well-log/phie/stats', methods=['GET'])
+    def get_phie_stats():
+        return controller.get_stats('phie')
+
     @well_log_routes.route('/well-log/phie/wells', methods=['GET'])
     def get_phie_well_names():
         return controller.get_well_names('phie')
+
+    @well_log_routes.route('/well-log/phie/<string:well_name>/stats', methods=['GET'])
+    def get_phie_well_stats(well_name: str):
+        return controller.get_well_stats('phie', well_name)
 
     @well_log_routes.route('/well-log/phie/<string:well_name>', methods=['GET'])
     def get_phie_by_well(well_name: str):
@@ -24,9 +32,17 @@ def create_well_log_routes() -> Blueprint:
     def get_all_swe():
         return controller.get_all_by_type('swe')
 
+    @well_log_routes.route('/well-log/swe/stats', methods=['GET'])
+    def get_swe_stats():
+        return controller.get_stats('swe')
+
     @well_log_routes.route('/well-log/swe/wells', methods=['GET'])
     def get_swe_well_names():
         return controller.get_well_names('swe')
+
+    @well_log_routes.route('/well-log/swe/<string:well_name>/stats', methods=['GET'])
+    def get_swe_well_stats(well_name: str):
+        return controller.get_well_stats('swe', well_name)
 
     @well_log_routes.route('/well-log/swe/<string:well_name>', methods=['GET'])
     def get_swe_by_well(well_name: str):
@@ -37,9 +53,17 @@ def create_well_log_routes() -> Blueprint:
     def get_all_vsh():
         return controller.get_all_by_type('vsh')
 
+    @well_log_routes.route('/well-log/vsh/stats', methods=['GET'])
+    def get_vsh_stats():
+        return controller.get_stats('vsh')
+
     @well_log_routes.route('/well-log/vsh/wells', methods=['GET'])
     def get_vsh_well_names():
         return controller.get_well_names('vsh')
+
+    @well_log_routes.route('/well-log/vsh/<string:well_name>/stats', methods=['GET'])
+    def get_vsh_well_stats(well_name: str):
+        return controller.get_well_stats('vsh', well_name)
 
     @well_log_routes.route('/well-log/vsh/<string:well_name>', methods=['GET'])
     def get_vsh_by_well(well_name: str):

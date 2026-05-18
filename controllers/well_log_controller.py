@@ -2,6 +2,7 @@ from services.well_log_service import WellLogService
 from typing import Tuple
 from flask import Response, request, jsonify
 from common.response_utils import success_response, error_response, ListResponse
+from models.well_log_model import WellLogStats, WellLogWellStats
 
 
 class WellLogController:
@@ -51,5 +52,27 @@ class WellLogController:
                 "success": True,
                 "data": {"datasets": result, "count": len(datasets)}
             }), 200
+        except Exception as e:
+            return error_response(str(e), 500)
+
+    def get_stats(self, log_type: str) -> Tuple[Response, int]:
+        try:
+            dataset = request.args.get('dataset', 'default')
+            stats = self.service.get_stats(log_type, dataset=dataset)
+            return success_response(stats)
+        except ValueError as e:
+            return error_response(str(e), 400)
+        except Exception as e:
+            return error_response(str(e), 500)
+
+    def get_well_stats(self, log_type: str, well_name: str) -> Tuple[Response, int]:
+        try:
+            dataset = request.args.get('dataset', 'default')
+            stats = self.service.get_well_stats(log_type, well_name, dataset=dataset)
+            if stats is None:
+                return error_response(f"Well '{well_name}' not found in {log_type.upper()} log (dataset: '{dataset}')", 404)
+            return success_response(stats)
+        except ValueError as e:
+            return error_response(str(e), 400)
         except Exception as e:
             return error_response(str(e), 500)
