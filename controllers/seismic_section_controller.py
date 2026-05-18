@@ -1,7 +1,7 @@
 from services.seismic_section_service import SeismicSectionService
 from typing import Tuple
 from flask import Response, request, jsonify
-from common.response_utils import file_response, error_response
+from common.response_utils import file_response, error_response, success_response
 
 
 class SeismicSectionController:
@@ -40,38 +40,6 @@ class SeismicSectionController:
         except Exception as e:
             return error_response(str(e), 500)
 
-    def get_inline_mjb_image(self, number: int) -> Tuple[Response, int] | Response:
-        """Return a PNG image for the requested inline MJB section number."""
-        try:
-            dataset = request.args.get('dataset', 'default')
-            section = self.service.get_inline_mjb_image(number, dataset=dataset)
-            if section is None:
-                return error_response(f"Inline MJB section {number} not found in dataset '{dataset}'", 404)
-
-            return file_response(
-                data=section.image_data,
-                mime_type='image/png',
-                filename=f'inlineMJB_{number}.png',
-            )
-        except Exception as e:
-            return error_response(str(e), 500)
-
-    def get_crossline_mjb_image(self, number: int) -> Tuple[Response, int] | Response:
-        """Return a PNG image for the requested crossline MJB section number."""
-        try:
-            dataset = request.args.get('dataset', 'default')
-            section = self.service.get_crossline_mjb_image(number, dataset=dataset)
-            if section is None:
-                return error_response(f"Crossline MJB section {number} not found in dataset '{dataset}'", 404)
-
-            return file_response(
-                data=section.image_data,
-                mime_type='image/png',
-                filename=f'crosslineMJB_{number}.png',
-            )
-        except Exception as e:
-            return error_response(str(e), 500)
-
     def get_datasets(self) -> Tuple[Response, int]:
         try:
             datasets = self.service.get_available_datasets()
@@ -83,5 +51,16 @@ class SeismicSectionController:
                 "success": True,
                 "data": {"datasets": result, "count": len(datasets)}
             }), 200
+        except Exception as e:
+            return error_response(str(e), 500)
+
+    def get_section_ranges(self) -> Tuple[Response, int]:
+        """Return min/max/count/range for all section types in a dataset."""
+        try:
+            dataset = request.args.get('dataset', 'default')
+            ranges = self.service.get_section_ranges(dataset=dataset)
+            return success_response(ranges)
+        except ValueError as e:
+            return error_response(str(e), 400)
         except Exception as e:
             return error_response(str(e), 500)
