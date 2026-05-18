@@ -2,7 +2,7 @@ import csv
 import os
 from pathlib import Path
 from typing import List, Optional, Dict, Tuple
-from models.well_log_model import WellLogEntry, WellLogData
+from models.well_log_model import WellLogEntry, WellLogData, WellLogStats, WellLogWellStats
 
 WELL_LOG_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'csv_data', 'well_log')
 
@@ -157,6 +157,123 @@ class WellLogRepository:
             well_name=well_name,
             log_type=log_type,
             entries=entries
+        )
+
+    def get_stats(self, log_type: str, dataset: str = 'default') -> WellLogStats:
+        """Return TWT statistics for a given log type.
+
+        Reads only the first (TWT) column, so this is fast even for large files.
+        """
+        log_type = self._validate_log_type(log_type)
+        csv_path = self._get_csv_path(log_type, dataset)
+
+        twt_values: List[float] = []
+        try:
+            with open(csv_path, 'r', newline='') as file:
+                reader = csv.reader(file)
+                next(reader)  # skip header
+                for row in reader:
+                    try:
+                        twt = float(row[0])
+                        twt_values.append(twt)
+                    except (ValueError, IndexError):
+                        continue
+        except Exception as e:
+            raise Exception(f"Error reading CSV file: {str(e)}")
+
+        if not twt_values:
+            return WellLogStats(
+                log_type=log_type,
+                total_rows=0,
+                min_twt=0.0,
+                max_twt=0.0,
+                max_abs_twt=0.0,
+                mid_twt=0.0
+            )
+
+        min_twt = min(twt_values)
+        max_twt = max(twt_values)
+        max_abs_twt = max(abs(v) for v in twt_values)
+        mid_twt = max_abs_twt / 2
+
+        return WellLogStats(
+            log_type=log_type,
+            total_rows=len(twt_values),
+            min_twt=min_twt,
+            max_twt=max_twt,
+            max_abs_twt=max_abs_twt,
+            mid_twt=mid_twt
+        )
+
+    def get_well_stats(self, log_type: str, well_name: str, dataset: str = 'default') -> Optional[WellLogWellStats]:
+        """Return TWT statistics for a specific well in a given log type.
+
+        Also counts how many entries have a non-null (non-empty) value.
+        """
+        log_type = self._validate_log_type(log_type)
+        csv_path = self._get_csv_path(log_type, dataset)
+
+        twt_values: List[float] = []
+        non_null_count = 0
+        col_index: Optional[int] = None
+
+        try:
+            with open(csv_path, 'r', newline='') as file:
+                reader = csv.reader(file)
+                headers = next(reader)
+                header_names = [h.strip() for h in headers]
+
+                for idx, name in enumerate(header_names):
+                    if name == well_name:
+                        col_index = idx
+                        break
+
+                if col_index is None:
+                    return None
+
+                for row in reader:
+                    try:
+                        twt = float(row[0])
+                        twt_values.append(twt)
+                    except (ValueError, IndexError):
+                        continue
+
+                    raw_value = row[col_index] if col_index < len(row) else ''
+                    if raw_value is not None and raw_value.strip() != '':
+                        try:
+                            float(raw_value)
+                            non_null_count += 1
+                        except (ValueError, TypeError):
+                            pass
+        except Exception as e:
+            raise Exception(f"Error reading CSV file: {str(e)}")
+
+        if not twt_values:
+            return WellLogWellStats(
+                well_name=well_name,
+                log_type=log_type,
+                total_rows=0,
+                min_twt=0.0,
+                max_twt=0.0,
+                max_abs_twt=0.0,
+                mid_twt=0.0,
+                non_null_count=0
+            )
+
+        min_twt = min(twt_values)
+        max_twt = max(twt_values)
+        max_abs_twt = max(abs(v) for v in twt_values)
+        mid_twt = max_abs_twt / 2
+
+        return WellLogWellStats(
+            well_name=well_name,
+            log_type=log_type,
+            total_rows=len(twt_values),
+            min_twt=min_twt,
+            max_twt=max_twt,
+            max_abs_twt=max_abs_twt,
+            mid_twt=mid_twt,
+            non_null_count=non_null_count
         )
 
     def clear_cache(self, dataset: str | None = None, log_type: str | None = None):
