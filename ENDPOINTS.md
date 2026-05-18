@@ -366,7 +366,7 @@ curl http://localhost:5000/api/well/datasets
 
 Base path: `/api`
 
-Well log endpoints are organized by log type: `phie`, `swe`, and `vsh`. Each log type supports the same three operations: listing all entries, listing well names, and fetching data for a specific well.
+Well log endpoints are organized by log type: `phie`, `swe`, and `vsh`. Each log type supports the same five operations: listing all entries, listing well names, fetching data for a specific well, fetching TWT statistics for the log type, and fetching TWT statistics for a specific well.
 
 > **Available Log Types:** `phie` (effective porosity), `swe` (water saturation), `vsh` (shale volume)
 
@@ -544,6 +544,109 @@ curl http://localhost:5000/api/well-log/phie/MJ-150
       {"twt": -6.0, "value": 0.0032}
     ],
     "count": 2501
+  }
+}
+```
+
+**Error Response (Well Not Found):**
+
+```json
+{
+  "success": false,
+  "error": "Well 'MJ-999' not found in PHIE log (dataset: 'default')"
+}
+```
+HTTP Status: `404`
+
+---
+
+### `GET /api/well-log/<log_type>/stats`
+
+**Purpose:** Retrieve TWT (Two-Way Time) statistics for a specific log type across all wells.
+
+**Path Parameters:**
+
+| Parameter  | Type   | Description                                    |
+|------------|--------|------------------------------------------------|
+| `log_type` | string | Log type: `phie`, `swe`, or `vsh`             |
+
+**Query Parameters:**
+
+| Parameter | Type   | Default   | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| `dataset` | string | `default` | Name of the well log dataset to query.   |
+
+**Example Request:**
+
+```bash
+curl http://localhost:5000/api/well-log/phie/stats
+```
+
+**Example Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "log_type": "phie",
+    "total_rows": 2501,
+    "min_twt": -5000.0,
+    "max_twt": 0.0,
+    "max_abs_twt": 5000.0,
+    "mid_twt": 2500.0
+  }
+}
+```
+
+**Error Response:**
+
+```json
+{
+  "success": false,
+  "error": "Dataset 'unknown' not found for log type 'phie'"
+}
+```
+HTTP Status: `400`
+
+---
+
+### `GET /api/well-log/<log_type>/<string:well_name>/stats`
+
+**Purpose:** Retrieve TWT (Two-Way Time) statistics for a specific well in a given log type, including the count of non-null values.
+
+**Path Parameters:**
+
+| Parameter   | Type   | Description                                    |
+|-------------|--------|------------------------------------------------|
+| `log_type`  | string | Log type: `phie`, `swe`, or `vsh`             |
+| `well_name` | string | The name of the well to fetch statistics for.  |
+
+**Query Parameters:**
+
+| Parameter | Type   | Default   | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| `dataset` | string | `default` | Name of the well log dataset to query.   |
+
+**Example Request:**
+
+```bash
+curl http://localhost:5000/api/well-log/phie/MJ-150/stats
+```
+
+**Example Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "well_name": "MJ-150",
+    "log_type": "phie",
+    "total_rows": 2501,
+    "min_twt": -5000.0,
+    "max_twt": 0.0,
+    "max_abs_twt": 5000.0,
+    "mid_twt": 2500.0,
+    "non_null_count": 2501
   }
 }
 ```
