@@ -54,9 +54,10 @@ class SeismicRangesResponse:
     ranges: Dict[str, Optional[SectionRange]]
 
     def to_dict(self) -> dict:
-        result = {"dataset": self.dataset}
-        ranges_dict = {}
+        ranges_dict: dict[str, dict | None] = {}
         for key, value in self.ranges.items():
             ranges_dict[key] = value.to_dict() if value else None
-        result["ranges"] = ranges_dict
-        return result
+        return {
+            "dataset": self.dataset,
+            "ranges": ranges_dict,
+        }
